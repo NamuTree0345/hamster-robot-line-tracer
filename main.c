@@ -1,8 +1,39 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include "roboid.h"
+#include <pthread.h>
+#include <unistd.h>
+#include <stdlib.h>
 
-/* run this program using the console pauser or add your own getch, system("pause") or input loop */
+void *sound() {
+	hamster_pitch("C");
+	wait(100);
+	hamster_pitch("off");
+
+	hamster_pitch("E");
+	wait(100);
+	hamster_pitch("off");
+	hamster_pitch("G");
+	wait(100);
+	hamster_pitch("off");
+	/*
+	hamster_pitch("C");
+	wait(500);
+	hamster_pitch("off");
+	*/
+}
+
+void soundCreateThread() {
+	pthread_t p_thread[1];
+	int thr_id;
+
+	char p1[] = "th1";
+	thr_id = pthread_create(&p_thread[0], NULL, sound, (void *)p1);
+    if (thr_id < 0)
+    {
+        perror("thread create error!");
+        exit(0);
+    }
+}
 
 int main(int argc, char *argv[]) {
 	printf("loading\n");
@@ -14,6 +45,7 @@ int main(int argc, char *argv[]) {
 		
 		if(hamster_left_floor() <= 20) {
 			// left
+						soundCreateThread();
 			if(rot == 0) {
 				hamster_turn_left(1, 15);
 				rot = 1;
@@ -24,9 +56,11 @@ int main(int argc, char *argv[]) {
 				hamster_turn_left(1, 5);
 				rot = 0;
 			}
+			hamster_leds("green", "off");
 
 		} else if(hamster_right_floor() <= 20) {
 			// right 
+						soundCreateThread();
 			if(rot == 0) {
 				hamster_turn_right(1, 15);
 				rot = 1;
@@ -37,6 +71,7 @@ int main(int argc, char *argv[]) {
 				hamster_turn_right(1, 5);
 				rot = 0;
 			}
+			hamster_leds("off", "green");
 		} else {
 			// 돌고있지 않을 때
 			rot = 0;
